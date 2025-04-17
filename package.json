@@ -1,0 +1,25 @@
+{
+	"name": "a10-server",
+	"version": "1.0.0",
+	"description": "Server assignmwent 10 which will be used to fetch data via mongo Db and will use ecpress and cors as middleware",
+	"keywords": [
+		"Assignement",
+		"10",
+		"CORS",
+		"Express.js"
+	],
+	"license": "ISC",
+	"author": "Md. Nurun Nabi",
+	"type": "commonjs",
+	"main": "index.js",
+	"scripts": {
+		"start": "node index.js",
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"dependencies": {
+		"cors": "^2.8.5",
+		"dotenv": "^16.5.0",
+		"express": "^5.1.0",
+		"mongodb": "^6.15.0"
+	}
+}
