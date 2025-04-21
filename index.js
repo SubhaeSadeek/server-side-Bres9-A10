@@ -2,17 +2,18 @@ require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion } = require("mongodb");
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 5001;
 
 const app = express();
 
 // including MiddleWare
-app.use(cors);
+app.use(cors());
 app.use(express.json());
 
+// User [] password [hwnqZvJS4TyyTPYT]
 // connection config for mongodb
-const uri = `mongodb+srv://${process.env.USER_DB}:${process.env.PASS_DB}@cluster0.i6qlf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
 
+const uri = `mongodb+srv://${process.env.USER_DB}:${process.env.PASS_DB}@cluster0.i6qlf.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`
 const client = new MongoClient(uri, {
     serverApi: {
         version: ServerApiVersion.v1,
@@ -28,7 +29,33 @@ async function run() {
         await client.db("admin").command({ ping: 1 });
         console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
-        const database = client.db('ChillGamerDB');
+        const database = client.db("ChillGamerDB");
+        const reviewCollection = database.collection("gameReview");
+        const userCollection = database.collection("users")
+        
+
+        // reviews APIs::::::::::::::::::::::::
+        // add review ....
+        app.post("/review", async (req, res)=> {
+            const newReview = req.body;
+            const result = await reviewCollection.insertOne(newReview);
+            res.send(result);
+        })
+
+
+
+
+
+
+
+        // USER APIsssssssssssssssssss
+        app.post("/user", async (req, res)=>{
+            const newUser = req.body;
+            const result = await userCollection.insertOne(newUser);
+            console.log(result);
+            res.send(result);
+        })
+
        /*  const coffeeCollection = database.collection('coffeeDetails');
         const userCollection = database.collection('users'); */
 
