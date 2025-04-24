@@ -35,9 +35,53 @@ async function run() {
         
 
         // reviews APIs::::::::::::::::::::::::
+        // reading reviews
+        app.get("/review", async (req, res) =>{
+            const cursor = reviewCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        })
+
+        app.get('/limitReview',async (req, res) => {
+            const page = parseInt(req.query.page) || 1;
+            const limit = parseInt(req.query.limit) || 6;
+            const skip = (page - 1) * limit;
+          
+                      
+            reviewCollection
+              .find({})
+              .sort({ ratingOfGame: -1 }) 
+              .skip(skip)
+              .limit(limit)
+              .toArray()
+              .then(reviews => {
+                reviewCollection.countDocuments().then(total => {
+                  res.json({
+                    reviews,
+                    total,
+                    page,
+                    totalPages: Math.ceil(total / limit),
+                  });
+                });
+              })
+              .catch(err => {
+                console.error('Error fetching reviews:', err.message);
+                res.status(500).json({ error: 'Server error' });
+              });
+          });
+          
+          
         // add review ....
         app.post("/review", async (req, res)=> {
-            const newReview = req.body;
+
+            const ratingNum = parseInt(req.body.ratingOfGame, 10);
+            if (isNaN(ratingNum)) {
+              return res.send(400).json({ error: 'Rating must be a number' });
+            }
+            const newReview = {
+                ...req.body,       
+                ratingOfGame: ratingNum, 
+              };
             const result = await reviewCollection.insertOne(newReview);
             res.send(result);
         })
