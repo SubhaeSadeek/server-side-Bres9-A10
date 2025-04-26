@@ -31,6 +31,7 @@ async function run() {
 
         const database = client.db("ChillGamerDB");
         const reviewCollection = database.collection("gameReview");
+        const addWatchListCollection = database.collection("addWatchList");
         const userCollection = database.collection("users")
         
 
@@ -46,8 +47,17 @@ async function run() {
           const query = { _id: new ObjectId(id) };
           const result = await reviewCollection.findOne(query);
           res.send(result);
+        });
+        
+        // API for My Review (User specific review for the user)
+        app.post("/review", async (req, res)=>{
+          const {email} = req.body;
+          const cursor = reviewCollection.find({email:email});
+          const result = await cursor.toArray();
+          res.send(result);
         })
 
+        // API for limiting 6 data per page with rating sorted
         app.get('/limitReview',async (req, res) => {
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 6;
@@ -75,6 +85,20 @@ async function run() {
                 res.status(500).json({ error: 'Server error' });
               });
           });
+          // API for reading add to watch list
+          app.post("/addWatchList", async (req, res)=>{
+	
+            const {userEmail} = req.body;
+            const cursor = addWatchListCollection.find({watchListEmail:userEmail});
+            const result = await cursor.toArray();
+            res.send(result)
+          })
+
+
+
+
+
+
           
           
         // add review ....
@@ -92,17 +116,19 @@ async function run() {
             res.send(result);
         })
 
-
-
-
-
+        //API for add review IN WATCHLIST
+        app.post("/addWatchList", async (req, res)=>{
+          const newWatchList = req.body;
+          const result = await addWatchListCollection.insertOne(newWatchList);
+          console.log(result);
+          res.send(result);
+        })
 
 
         // USER APIsssssssssssssssssss
         app.post("/user", async (req, res)=>{
             const newUser = req.body;
             const result = await userCollection.insertOne(newUser);
-            console.log(result);
             res.send(result);
         })
 
