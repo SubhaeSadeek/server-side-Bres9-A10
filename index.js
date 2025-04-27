@@ -86,20 +86,24 @@ async function run() {
               });
           });
           // API for reading add to watch list
-          app.post("/addWatchList", async (req, res)=>{
-	
+          app.post("/myWatchList", async (req, res)=>{
             const {userEmail} = req.body;
             const cursor = addWatchListCollection.find({watchListEmail:userEmail});
             const result = await cursor.toArray();
             res.send(result)
           })
+          /* app.get("/myWatchList", async (req, res)=>{
+            const cursor = addWatchListCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+          }) */
 
 
 
 
 
 
-          
+        // API for Write in Db &&&&&&&&&&&&&&&&&&&&&&&&
           
         // add review ....
         app.post("/review", async (req, res)=> {
@@ -132,8 +136,19 @@ async function run() {
             res.send(result);
         })
 
-       /*  const coffeeCollection = database.collection('coffeeDetails');
-        const userCollection = database.collection('users'); */
+        /* ***************************************** */
+        // API for delete data
+        /* ***************************************** */
+        app.delete('/myWatchList/:id', async (req, res) => {
+          console.log('going to delete', req.params.id);
+          const id = req.params.id;
+          const query = { _id: id }
+          const result = await addWatchListCollection.deleteOne(query);
+          res.send(result);
+      })
+      
+
+       
 
 
 
