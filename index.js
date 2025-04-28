@@ -92,11 +92,7 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result)
           })
-          /* app.get("/myWatchList", async (req, res)=>{
-            const cursor = addWatchListCollection.find();
-            const result = await cursor.toArray();
-            res.send(result);
-          }) */
+   
 
 
 
@@ -135,6 +131,22 @@ async function run() {
             const result = await userCollection.insertOne(newUser);
             res.send(result);
         })
+
+        /* ***************************************** */
+        // API for UPDATE data
+        /* ***************************************** */
+        app.put('/review/:id', async (req, res) => {
+          const id = req.params.id;
+          const filter = { _id: id };
+          const options = { upsert: true };
+          const updatedDoc = {
+              $set: req.body
+          }
+
+          const result = await reviewCollection.updateOne(filter, updatedDoc, options )
+
+          res.send(result);
+      })
 
         /* ***************************************** */
         // API for delete data
