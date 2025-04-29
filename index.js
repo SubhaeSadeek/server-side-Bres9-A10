@@ -37,12 +37,12 @@ async function run() {
 
         // reviews APIs::::::::::::::::::::::::
         // reading reviews
-        app.get("/review", async (req, res) =>{
+        app.get("/review", async (req, res) =>{ /* fetching all review to allREview PAGE */
             const cursor = reviewCollection.find();
             const result = await cursor.toArray();
             res.send(result);
-        })
-        app.get("/review/:id", async (req, res)=>{
+        });
+        app.get("/review/:id", async (req, res)=>{ /* Fetching for review detail page */
           const id = req.params.id;
           const query = { _id: new ObjectId(id) };
           const result = await reviewCollection.findOne(query);
@@ -50,15 +50,15 @@ async function run() {
         });
         
         // API for My Review (User specific review for the user)
-        app.post("/review", async (req, res)=>{
+        app.post("/review", async (req, res)=>{ /* fetching user specific review to myReview PAGE */
           const {email} = req.body;
           const cursor = reviewCollection.find({email:email});
           const result = await cursor.toArray();
           res.send(result);
-        })
+        });
 
         // API for limiting 6 data per page with rating sorted
-        app.get('/limitReview',async (req, res) => {
+        app.get('/limitReview',async (req, res) => { /* READING all review and fetched to Home Page */
             const page = parseInt(req.query.page) || 1;
             const limit = parseInt(req.query.limit) || 6;
             const skip = (page - 1) * limit;
@@ -86,12 +86,12 @@ async function run() {
               });
           });
           // API for reading add to watch list
-          app.post("/myWatchList", async (req, res)=>{
+          app.post("/myWatchList", async (req, res)=>{ /* reading my watchlist via email throuogh post method for better scurity. it is from myWatchList PAGE */
             const {userEmail} = req.body;
             const cursor = addWatchListCollection.find({watchListEmail:userEmail});
             const result = await cursor.toArray();
             res.send(result)
-          })
+          });
    
 
 
@@ -102,42 +102,52 @@ async function run() {
         // API for Write in Db &&&&&&&&&&&&&&&&&&&&&&&&
           
         // add review ....
-        app.post("/review", async (req, res)=> {
-
+        /* app.post("/review", async (req, res) => {
+          try {
             const ratingNum = parseInt(req.body.ratingOfGame, 10);
-            if (isNaN(ratingNum)) {
-              return res.send(400).json({ error: 'Rating must be a number' });
-            }
             const newReview = {
-                ...req.body,       
-                ratingOfGame: ratingNum,
-              };
+              ...req.body,
+              ratingOfGame: ratingNum,
+            };
             const result = await reviewCollection.insertOne(newReview);
             res.send(result);
-        })
+          } catch (error) {
+            console.error(error);
+            res.status(500).send({ error: "Failed to add review" });
+          }
+        }); */
 
+        app.post("/addReview", async (req, res)=>{ /* add REview from add Review form */
+          const ratingNum = parseInt(req.body.ratingOfGame, 10);
+            const newReview = {
+              ...req.body,
+              ratingOfGame: ratingNum,
+            };
+          const result = await reviewCollection.insertOne(newReview);
+          res.send(result);
+      });
+        
         //API for add review IN WATCHLIST
-        app.post("/addWatchList", async (req, res)=>{
+        app.post("/addWatchList", async (req, res)=>{ /* adding watchlist from detail card */
           const newWatchList = req.body;
           const result = await addWatchListCollection.insertOne(newWatchList);
-          console.log(result);
           res.send(result);
-        })
+        });
 
 
-        // USER APIsssssssssssssssssss
-        app.post("/user", async (req, res)=>{
+        // Add USER APIsssssssssssssssssss
+        app.post("/user", async (req, res)=>{ /* add user drom register form */
             const newUser = req.body;
             const result = await userCollection.insertOne(newUser);
             res.send(result);
-        })
+        });
 
         /* ***************************************** */
         // API for UPDATE data
         /* ***************************************** */
-        app.put('/review/:id', async (req, res) => {
+        app.put('/review/:id', async (req, res) => { /* update review from myReview card */
           const id = req.params.id;
-          const filter = { _id: id };
+          const filter = { _id: new ObjectId(id) };
           const options = { upsert: true };
           const updatedDoc = {
               $set: req.body
@@ -146,17 +156,25 @@ async function run() {
           const result = await reviewCollection.updateOne(filter, updatedDoc, options )
 
           res.send(result);
-      })
+      });
 
         /* ***************************************** */
         // API for delete data
         /* ***************************************** */
-        app.delete('/myWatchList/:id', async (req, res) => {
-          console.log('going to delete', req.params.id);
+        app.delete('/myWatchList/:id', async (req, res) => { /* deleting frm myWatchList card */
+         
           const id = req.params.id;
           const query = { _id: id }
           const result = await addWatchListCollection.deleteOne(query);
           res.send(result);
+      });
+
+      // deleting for myREview Card
+      app.delete("/myReview/:id", async(req, res)=>{
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)};
+        const result = await reviewCollection.deleteOne(query);
+        res.send(result);
       })
       
 
