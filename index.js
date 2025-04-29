@@ -102,21 +102,6 @@ async function run() {
         // API for Write in Db &&&&&&&&&&&&&&&&&&&&&&&&
           
         // add review ....
-        /* app.post("/review", async (req, res) => {
-          try {
-            const ratingNum = parseInt(req.body.ratingOfGame, 10);
-            const newReview = {
-              ...req.body,
-              ratingOfGame: ratingNum,
-            };
-            const result = await reviewCollection.insertOne(newReview);
-            res.send(result);
-          } catch (error) {
-            console.error(error);
-            res.status(500).send({ error: "Failed to add review" });
-          }
-        }); */
-
         app.post("/addReview", async (req, res)=>{ /* add REview from add Review form */
           const ratingNum = parseInt(req.body.ratingOfGame, 10);
             const newReview = {
